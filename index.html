@@ -1,0 +1,169 @@
+<html>
+  <body>
+    <div>
+      <form>
+      <label for="anime">Qual anime você quer pesquisar?</label><br>
+      <input type="text" id="anime" name="anime"><br>
+      <input id="button" onclick="buscar(event)" type="submit" value="Search"><br>
+      </form>
+    </div>
+      <table id="myTable">
+          <thead>
+              <tr>
+                  <th onclick="sortTable(0)">Titulo</th>
+                  <th onclick="sortTable(1)">Ano</th>
+                  <th onclick="sortTable(2)">Score</th>
+                  <th onclick="sortTable(3)">Imagem</th>
+              </tr>
+          </thead>
+          <tbody id="principal"></tbody>
+      </table>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&family=Roboto+Condensed:wght@300&display=swap');
+          * {
+            box-sizing: border-box;
+          }
+
+          .row {
+            margin-left:-5px;
+            margin-right:-5px;
+          }
+            
+          .column {
+            float: left;
+            width: 50%;
+            padding: 5px;
+          }
+          
+          /* Clearfix (clear floats) */
+          .row::after {
+            content: "";
+            clear: both;
+            display: table;
+          }
+          
+          table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            border: 1px solid #ddd;
+          }
+          
+          th, td {
+            text-align: left;
+            padding: 16px;
+            font-family: 'Roboto Condensed', sans-serif;
+          }
+          th{
+            background-color: #76e9bd;
+          }
+          
+          tr:nth-child(even) {
+            background-color: #dee9ee;
+          }
+          </style>
+    <div style="width: 100%; overflow: hidden;">
+      <div id="tabela" style="width: 400px; float: left;"></div>
+      <div id="imagem" style="margin-left: 420px;"> </div>
+    </div>
+    <script>      
+
+var animes = [
+    {
+
+      url: "https://myanimelist.net/anime/1535/Death_Note",
+
+      image_url: "https://cdn.myanimelist.net/images/anime/9/9453.jpg?s=b89e80691ac5cc0610847ccbe0b8424a",
+
+      title: "Death Note",
+
+      score: 8.63,
+
+      start_date: "2006-10-04T00:00:00+00:00",
+
+    },
+
+    {
+
+      url: "https://myanimelist.net/anime/28223/Death_Parade",
+
+      image_url: "https://cdn.myanimelist.net/images/anime/5/71553.jpg?s=68833377dab9077cd7847c91eec46f08",
+
+      title: "Death Parade",
+
+      score: 8.18,
+
+      start_date: "2015-01-10T00:00:00+00:00",
+
+    },
+
+    {
+
+      url: "https://myanimelist.net/anime/14353/Death_Billiards",
+
+      image_url: "https://cdn.myanimelist.net/images/anime/11/48721.jpg?s=4728f1efeabefb313634e64ac91f514b",
+
+      title: "Death Billiards",
+
+      score: 7.91,
+
+      start_date: "2013-03-02T00:00:00+00:00",
+
+    }
+]
+      function tabelaAnimes(){
+        return animes.map(f => `<tr><td><a href="${f.url}" target="_blank">${f.title}</a></td> <td>${new Date(f.start_date).getFullYear()}</td> <td>${f.score}</td> <td><a href="#" onclick="carregarImagem(event,'${f.image_url}')">Carregar</a></td></tr>`)
+          }                   
+      const carregarImagem = (event, url) => {
+        event.preventDefault()
+        document.getElementById("imagem").innerHTML = `<img src="${url}"  width="200px"/>`
+        }
+
+      function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("myTable");
+        switching = true;
+        dir = "asc"; 
+        while (switching) {
+          switching = false;
+          rows = table.rows;
+          for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[n];
+            y = rows[i + 1].getElementsByTagName("TD")[n];
+            if (dir == "asc") {
+              if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                shouldSwitch= true;
+                break;
+              }
+            } else if (dir == "desc") {
+              if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                shouldSwitch = true;
+                break;
+              }
+            }
+          }
+          if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount ++;      
+          } else {
+            if (switchcount == 0 && dir == "asc") {
+              dir = "desc";
+              switching = true;
+            }
+          }
+        }
+      }
+
+      async function buscar(event){
+        event.preventDefault()
+        await fetch('https://api.jikan.moe/v3/search/anime?q=death')
+                .then(response => response.json())
+                .then(response => animes = response.results)
+                .catch(err => console.error(err));
+          document.getElementById("principal").innerHTML = tabelaAnimes()
+      }
+    </script>
+  </body>
+</html>
