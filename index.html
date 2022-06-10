@@ -2,9 +2,9 @@
   <body>
     <div>
       <form>
-      <label for="anime">Qual anime você quer pesquisar?</label><br>
-      <input type="text" id="anime" name="anime"><br>
-      <input id="button" onclick="buscar(event)" type="submit" value="Search"><br>
+      <label for="busca">Qual anime você quer pesquisar?</label><br>
+      <input type="text" id="search" name="search" value="" minlength="3" required><br>
+      <input id="button" onclick="buscar(event)" type="submit" value="Pesquisar"><br>
       </form>
     </div>
       <table id="myTable">
@@ -158,7 +158,7 @@ var animes = [
 
       async function buscar(event){
         event.preventDefault()
-        await fetch('https://api.jikan.moe/v3/search/anime?q=death')
+        await fetch('https://api.jikan.moe/v3/search/anime?q=' + document.getElementsByTagName("input")[0].value)
                 .then(response => response.json())
                 .then(response => animes = response.results)
                 .catch(err => console.error(err));
